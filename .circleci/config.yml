@@ -5,7 +5,7 @@ workflows:
   full_test:
     jobs:
       - npm_install
-      - npm_test:
+      - tests:
           requires:
             - npm_install
 
@@ -23,7 +23,7 @@ jobs:
           root: .
           paths:
           - node_modules
-  npm_test:
+  tests:
     docker:
       - image: circleci/node:8.15.1-browsers
     steps:
@@ -31,6 +31,6 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Run npm test
+          name: Run tests
           command: |
             npm run test:unit
