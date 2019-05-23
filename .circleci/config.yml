@@ -2,12 +2,33 @@ version: 2
 
 workflows:
   version: 2
-  full_test:
+  build_and_release:
     jobs:
       - npm_install
-      - tests:
+      - unit_tests:
           requires:
             - npm_install
+      - build_dist:
+          requires:
+            - npm_install
+      - create_github_release:
+          requires:
+            - build_dist
+          filters:
+            tags:
+              only: /^v(\d+)[.](\d+)[.](\d+)/
+            branches:
+              ignore: /.*/
+  release_process:
+    jobs:
+      - set_manifest_version:
+          filters:
+            branches:
+              only:
+                - /^Version-v(\d+)[.](\d+)[.](\d+)/
+      - create_release_pull_request:
+          requires:
+            - set_manifest_version
 
 jobs:
   npm_install:
@@ -22,8 +43,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-          - node_modules
-  tests:
+            - node_modules
+  unit_tests:
     docker:
       - image: circleci/node:8.15.1-browsers
     steps:
@@ -31,6 +52,55 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Run tests
+          name: Run unit tests
           command: |
             npm run test:unit
+  build_dist:
+    docker:
+      - image: circleci/node:8.15.1-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build distributables
+          command: |
+            npm run dist
+      - persist_to_workspace:
+          root: .
+          paths:
+            - builds
+            - dist
+  create_github_release:
+    docker:
+      - image: circleci/node:8.15.1-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Create GitHub release
+          command: |
+            .circleci/scripts/release-create-gh-release
+  set_manifest_version:
+    docker:
+      - image: circleci/node:8.15.1-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Set extension manifest version
+          command: |
+            .circleci/scripts/release-bump-manifest-version
+  create_release_pull_request:
+    docker:
+      - image: circleci/node:8.15.1-browsers
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Create GitHub Pull Request for branch
+          command: |
+            .circleci/scripts/release-create-release-pr
