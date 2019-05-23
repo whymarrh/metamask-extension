@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+set -u
+set -o pipefail
+
+if [[ "${CI:-}" != 'true' ]]
+then
+    printf '%s\n' 'CI environment variable must be set to true'
+    exit 1
+fi
+
+if [[ "${CIRCLECI:-}" != 'true' ]]
+then
+    printf '%s\n' 'CIRCLECI environment variable must be set to true'
+    exit 1
+fi
+
+printf '%s\n' 'Installing hub CLI'
+pushd "$(mktemp -d)"
+    curl -sSL 'https://github.com/github/hub/releases/download/v2.11.2/hub-linux-amd64-2.11.2.tgz' | tar xz
+    PATH="$PATH:$PWD/hub-linux-amd64-2.11.2/bin"
+popd
+
+current_commit_msg=$(git show -s --format='%s' HEAD)
+
+if grep --quiet '^Version v' <<< "$current_commit_msg"
+then
+    printf '%s\n' 'Creating GitHub Release'
+    tag="${current_commit_msg/Version /}"
+    pushd builds
+        hub release create \
+            --attach metamask-chrome-6.5.3.zip \
+            --attach metamask-firefox-6.5.3.zip \
+            --message "$current_commit_msg" \
+            --commitish "$CIRCLE_SHA1" \
+            "$tag"
+    popd
+else
+    printf '%s\n' 'Skipping GitHub Release'
+    exit 0
+fi
