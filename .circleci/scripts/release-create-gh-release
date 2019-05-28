@@ -34,7 +34,7 @@ then
         hub release create \
             --attach metamask-chrome-*.zip \
             --attach metamask-firefox-*.zip \
-            --message "$current_commit_msg" \
+            --message "${commit_words[0]} ${commit_words[1]#v}" \
             --commitish "$CIRCLE_SHA1" \
             "$tag"
     popd
