@@ -31,8 +31,8 @@ then
     tag="${current_commit_msg/Version /}"
     pushd builds
         hub release create \
-            --attach metamask-chrome-6.5.3.zip \
-            --attach metamask-firefox-6.5.3.zip \
+            --attach metamask-chrome-*.zip \
+            --attach metamask-firefox-*.zip \
             --message "$current_commit_msg" \
             --commitish "$CIRCLE_SHA1" \
             "$tag"
