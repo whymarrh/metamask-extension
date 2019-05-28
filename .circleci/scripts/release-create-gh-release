@@ -28,7 +28,8 @@ current_commit_msg=$(git show -s --format='%s' HEAD)
 if grep --quiet '^Version v' <<< "$current_commit_msg"
 then
     printf '%s\n' 'Creating GitHub Release'
-    tag="${current_commit_msg/Version /}"
+    read -ra commit_words <<< "$current_commit_msg"
+    tag="${commit_words[1]}"
     pushd builds
         hub release create \
             --attach metamask-chrome-*.zip \
