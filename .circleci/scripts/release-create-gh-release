@@ -35,6 +35,7 @@ then
     printf '%s\n' 'Creating GitHub Release'
     read -ra commit_words <<< "$current_commit_msg"
     tag="${commit_words[1]}"
+    release_body="$(awk -v version="${tag##v}" -f .circleci/scripts/show-changelog.awk CHANGELOG.md)"
     pushd builds
         hub release create \
             --attach metamask-chrome-*.zip \
