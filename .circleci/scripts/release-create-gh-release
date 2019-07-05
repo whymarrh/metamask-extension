@@ -40,6 +40,7 @@ then
             --attach metamask-chrome-*.zip \
             --attach metamask-firefox-*.zip \
             --message "${commit_words[0]} ${commit_words[1]#v}" \
+            --message "$release_body" \
             --commitish "$CIRCLE_SHA1" \
             "$tag"
     popd

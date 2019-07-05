@@ -92,6 +92,7 @@ jobs:
           name: Create GitHub Pull Request for version
           command: |
             .circleci/scripts/release-bump-manifest-version
+            .circleci/scripts/release-bump-changelog-version
             .circleci/scripts/release-create-release-pr
 
   prep-deps-npm:
