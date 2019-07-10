@@ -32,7 +32,7 @@ git \
     -c user.name='MetaMask Bot' \
     -c user.email='metamaskbot@users.noreply.github.com' \
     commit --message "${CIRCLE_BRANCH/-/ }" \
-        app/manifest.json
+        CHANGELOG.md app/manifest.json
 
 repo_slug="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
 git push "https://$GITHUB_TOKEN_USER:$GITHUB_TOKEN@github.com/$repo_slug" "$CIRCLE_BRANCH"
