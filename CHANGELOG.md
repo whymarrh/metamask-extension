@@ -1,6 +1,8 @@
 # Changelog
 
 ## Current Develop Branch
+
+## 7.0.0 Wed Jul 10 2019
 - [#6828](https://github.com/MetaMask/metamask-extension/pull/6828): Capitalized speed up label to match rest of UI  
 
 ## 6.7.1 Fri Jun 28 2019
